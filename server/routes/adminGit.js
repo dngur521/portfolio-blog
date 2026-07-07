@@ -6,12 +6,30 @@ const requireAuth = require('../middlewares/auth');
 const { assertValidSlug, safeResolve } = require('../utils/sanitizeSlug');
 const geminiService = require('../services/geminiService');
 const gitService = require('../services/gitService');
+const activityLogService = require('../services/activityLogService');
 
 const PROJECT_ROOT = path.resolve(__dirname, '..', '..');
 const POSTS_ROOT = path.resolve(PROJECT_ROOT, 'posts');
 const ABOUT_RELATIVE_PATH = 'content/about.md';
 
 router.use(requireAuth);
+
+// 활동 이력 기록은 부가 기능이므로, 여기서 실패하더라도 실제 커밋/푸시
+// 응답에는 영향을 주지 않는다 (server/routes/admin.js의 동일 패턴 참고).
+async function logActivity(req, eventType, target) {
+  try {
+    await activityLogService.logEvent({
+      adminId: req.session.adminId,
+      usernameAttempted: req.session.username,
+      eventType,
+      ip: req.ip,
+      userAgent: req.get('user-agent'),
+      target,
+    });
+  } catch (err) {
+    console.error('활동 이력 기록 실패:', err);
+  }
+}
 
 // git status/commit 대상으로 넘어온 경로가 posts/{category}/{slug}.md 또는 content/about.md인지
 // 검증하고, 검증된 절대경로를 돌려준다. 그 외 경로는 전부 거부한다 - 클라이언트가 보낸 경로를
@@ -89,7 +107,9 @@ router.post('/commit-push', async (req, res, next) => {
     }
     paths.forEach(validateRelativePath);
 
-    const result = await gitService.commitAndPush({ filePaths: paths, message: String(message).trim() });
+    const trimmedMessage = String(message).trim();
+    const result = await gitService.commitAndPush({ filePaths: paths, message: trimmedMessage });
+    await logActivity(req, 'GIT_COMMIT_PUSH', `${paths.join(', ')} - ${trimmedMessage}`);
     res.json({ ok: true, commitHash: result.commitHash });
   } catch (err) {
     next(err);

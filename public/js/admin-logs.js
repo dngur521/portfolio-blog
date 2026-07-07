@@ -6,6 +6,7 @@
     POST_CREATE: '글 작성',
     POST_UPDATE: '글 수정',
     POST_DELETE: '글 삭제',
+    GIT_COMMIT_PUSH: 'Git 커밋 & 푸시',
   };
   const ALERT_WINDOW_MS = 60 * 1000;
 

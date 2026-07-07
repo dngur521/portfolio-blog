@@ -70,7 +70,8 @@ CREATE TABLE activity_logs (
   username_attempted VARCHAR(50) NOT NULL,
   event_type ENUM(
     'LOGIN_SUCCESS', 'LOGIN_FAIL', 'LOGOUT',
-    'POST_CREATE', 'POST_UPDATE', 'POST_DELETE'
+    'POST_CREATE', 'POST_UPDATE', 'POST_DELETE',
+    'GIT_COMMIT_PUSH'
   ) NOT NULL,
   ip_address VARCHAR(45) NOT NULL,
   user_agent VARCHAR(500),
