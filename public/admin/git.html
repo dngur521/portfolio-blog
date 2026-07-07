@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <script>(function(){try{var t=localStorage.getItem("theme");if(t==="light"||t==="dark")document.documentElement.setAttribute("data-theme",t);}catch(e){}})();</script>
+  <title>Git 관리 - 김우혁의 블로그 관리자</title>
+  <link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+  <nav class="site-nav" id="site-nav"></nav>
+  <main class="container">
+    <h1 class="page-title">Git 관리</h1>
+    <p class="git-page-hint">아직 커밋되지 않은 글 / About 변경 사항입니다. 커밋할 항목을 선택하고 메시지를 추천받은 뒤 GitHub에 push하세요.</p>
+    <div id="git-change-list"></div>
+    <div class="git-commit-panel" id="git-commit-panel" style="display:none;">
+      <input type="text" id="git-commit-message" placeholder="커밋 메시지" />
+      <div class="git-commit-actions">
+        <button type="button" class="btn btn-secondary" id="git-suggest-btn">메시지 추천받기</button>
+        <button type="button" class="btn" id="git-commit-btn">선택 항목 커밋 &amp; 푸시</button>
+      </div>
+      <div class="git-commit-status" id="git-commit-status"></div>
+    </div>
+  </main>
+
+  <script src="/vendor/jquery/jquery.min.js"></script>
+  <script src="/js/common.js"></script>
+  <script src="/js/admin-git.js"></script>
+</body>
+</html>

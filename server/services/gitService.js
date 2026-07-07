@@ -16,6 +16,21 @@ function run(args) {
   });
 }
 
+async function getStatus(paths) {
+  const { stdout } = await run(['status', '--porcelain', '--', ...paths]);
+  return stdout
+    .split('\n')
+    .filter(Boolean)
+    .map((line) => {
+      const code = line.slice(0, 2);
+      const file = line.slice(3);
+      let status = 'modified';
+      if (code.includes('?')) status = 'new';
+      else if (code.includes('D')) status = 'deleted';
+      return { path: file, status };
+    });
+}
+
 // filePaths는 항상 호출하는 쪽(routes/adminGit.js)이 safeResolve로 검증한 posts/ 하위 상대경로만 넘긴다.
 // 커밋 범위를 그 경로들로 한정해서(-- pathspec), 배포 중인 저장소에 그 순간 우연히 staged된
 // 다른 변경사항이 있더라도 함께 커밋되지 않게 한다.
@@ -49,4 +64,4 @@ async function commitAndPush({ filePaths, message }) {
   return { commitHash: hashOut.trim() };
 }
 
-module.exports = { commitAndPush };
+module.exports = { getStatus, commitAndPush };
