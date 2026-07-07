@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <script>(function(){try{var t=localStorage.getItem("theme");if(t==="light"||t==="dark")document.documentElement.setAttribute("data-theme",t);}catch(e){}})();</script>
   <title>카테고리 - 김우혁의 블로그</title>
   <link rel="stylesheet" href="/css/style.css" />
 </head>
@@ -13,7 +14,7 @@
       <h1 class="page-title" id="category-title">카테고리</h1>
       <div class="page-header-actions">
         <select id="category-filter" class="category-filter"></select>
-        <a class="btn" id="write-post-btn" href="/admin/editor.html" style="display:none;">+ 새 글 작성</a>
+        <a class="btn" id="write-post-btn" href="/admin/editor" style="display:none;">+ 새 글 작성</a>
       </div>
     </div>
     <div id="post-list" class="card-grid"></div>

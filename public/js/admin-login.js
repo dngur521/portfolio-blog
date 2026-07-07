@@ -1,5 +1,7 @@
 (function () {
   $(async function () {
+    Blog.initThemeToggle(document.getElementById('theme-select'));
+
     try {
       const status = await Blog.fetchJSON('/api/auth/status');
       if (status.authenticated) {

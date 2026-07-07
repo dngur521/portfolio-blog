@@ -99,6 +99,42 @@
     setTimeout(() => toast.remove(), 4000);
   }
 
+  const THEME_KEY = 'theme';
+
+  function getStoredTheme() {
+    try {
+      return localStorage.getItem(THEME_KEY) || 'auto';
+    } catch (e) {
+      return 'auto';
+    }
+  }
+
+  function applyTheme(theme) {
+    const root = document.documentElement;
+    if (theme === 'light' || theme === 'dark') {
+      root.setAttribute('data-theme', theme);
+    } else {
+      root.removeAttribute('data-theme');
+    }
+  }
+
+  function setTheme(theme) {
+    try {
+      localStorage.setItem(THEME_KEY, theme);
+    } catch (e) {
+      // localStorage 사용 불가 환경에서는 이번 페이지에서만 적용
+    }
+    applyTheme(theme);
+  }
+
+  function initThemeToggle(selectEl) {
+    if (!selectEl) return;
+    const current = getStoredTheme();
+    selectEl.value = current;
+    applyTheme(current);
+    selectEl.addEventListener('change', () => setTheme(selectEl.value));
+  }
+
   // 로그인 여부와 무관하게 항상 같은 공개 화면을 기본으로 보여주고,
   // 로그인된 경우에만 로그아웃/관리 링크를 얹어주는 단일 네비게이션.
   async function renderNav(activeCategorySlug, activePage) {
@@ -121,7 +157,7 @@
     const catLinks = categories
       .map((c) => {
         const active = c.slug === activeCategorySlug ? ' active' : '';
-        return `<a class="nav-cat${active}" href="/category.html?slug=${encodeURIComponent(c.slug)}">${escapeHtml(c.name)} <span class="badge">${c.postCount}</span></a>`;
+        return `<a class="nav-cat${active}" href="/category?slug=${encodeURIComponent(c.slug)}">${escapeHtml(c.name)} <span class="badge">${c.postCount}</span></a>`;
       })
       .join('');
 
@@ -130,34 +166,41 @@
 
     const authControlsHtml = status.authenticated
       ? `
-        <a class="nav-cat${activePage === 'logs' ? ' active' : ''}" href="/admin/logs.html">로그인 이력</a>
-        <a class="nav-cat${activePage === 'accounts' ? ' active' : ''}" href="/admin/accounts.html">계정 관리</a>
+        <a class="nav-cat${activePage === 'logs' ? ' active' : ''}" href="/admin/logs">로그인 이력</a>
+        <a class="nav-cat${activePage === 'accounts' ? ' active' : ''}" href="/admin/accounts">계정 관리</a>
         <span class="nav-user">${escapeHtml(status.displayName || status.username)}</span>
         <button class="btn btn-secondary" id="nav-logout-btn">로그아웃</button>
       `
-      : `<a class="btn btn-secondary" href="/admin/login.html">관리자 로그인</a>`;
+      : `<a class="btn btn-secondary" href="/admin/login">관리자 로그인</a>`;
 
     nav.innerHTML = `
       <div class="nav-inner">
         <a class="site-title" href="/">김우혁의 블로그</a>
         <div class="nav-categories">
           <a class="nav-cat${allActive}" href="/">전체 글 보기</a>
-          <a class="nav-cat${aboutActive}" href="/about.html">About me</a>
+          <a class="nav-cat${aboutActive}" href="/about">About me</a>
           ${catLinks}
         </div>
         <form class="nav-search" id="nav-search-form">
           <input type="search" id="nav-search-input" placeholder="검색..." maxlength="100" />
         </form>
         <div class="nav-auth">${authControlsHtml}</div>
+        <select id="theme-select" class="theme-select" aria-label="테마 선택">
+          <option value="auto">자동</option>
+          <option value="light">라이트</option>
+          <option value="dark">다크</option>
+        </select>
       </div>
     `;
+
+    initThemeToggle(document.getElementById('theme-select'));
 
     const form = document.getElementById('nav-search-form');
     form.addEventListener('submit', (e) => {
       e.preventDefault();
       const q = document.getElementById('nav-search-input').value.trim();
       if (q) {
-        window.location.href = `/search.html?q=${encodeURIComponent(q)}`;
+        window.location.href = `/search?q=${encodeURIComponent(q)}`;
       }
     });
 
@@ -177,7 +220,7 @@
   // 관리자 전용 페이지(글 편집/About 편집/로그/계정)에서 사용: 비로그인이면 로그인 페이지로 보낸다.
   function redirectIfNotAuthenticated(status) {
     if (!status || !status.authenticated) {
-      window.location.href = '/admin/login.html';
+      window.location.href = '/admin/login';
       return true;
     }
     return false;
@@ -205,7 +248,7 @@
 
     el.addEventListener('change', () => {
       const val = el.value;
-      window.location.href = val ? `/category.html?slug=${encodeURIComponent(val)}` : '/';
+      window.location.href = val ? `/category?slug=${encodeURIComponent(val)}` : '/';
     });
   }
 
@@ -228,7 +271,7 @@
     $(container).on('click', '.post-card', function () {
       const category = $(this).data('category');
       const slug = $(this).data('slug');
-      window.location.href = `/post.html?category=${encodeURIComponent(category)}&slug=${encodeURIComponent(slug)}`;
+      window.location.href = `/post?category=${encodeURIComponent(category)}&slug=${encodeURIComponent(slug)}`;
     });
   }
 
@@ -242,6 +285,7 @@
     renderNav,
     renderCategoryDropdown,
     redirectIfNotAuthenticated,
+    initThemeToggle,
     getCsrfToken,
     postCardHtml,
     bindPostCardNavigation,

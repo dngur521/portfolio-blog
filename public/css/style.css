@@ -7,7 +7,55 @@
   --color-primary: #3d5afe;
   --color-primary-dark: #2c3fc9;
   --color-danger: #d33a3a;
+  --color-accent-bg: #eef0ff;
+  --color-accent-text: #2c3fc9;
+  --color-warning-bg: #fff2f2;
   --radius: 8px;
+}
+
+/* "자동" 모드: 명시적으로 라이트/다크를 고르지 않았을 때 OS 설정을 따른다 */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-bg: #14151a;
+    --color-surface: #1c1e26;
+    --color-border: #2f323d;
+    --color-text: #e7e8ec;
+    --color-muted: #9a9ea8;
+    --color-primary: #7b93ff;
+    --color-primary-dark: #97aaff;
+    --color-danger: #ff7a7a;
+    --color-accent-bg: #262b45;
+    --color-accent-text: #a9b8ff;
+    --color-warning-bg: #3a2230;
+  }
+}
+
+/* 사용자가 명시적으로 라이트/다크를 고르면 OS 설정보다 우선한다 */
+:root[data-theme='light'] {
+  --color-bg: #f7f7f8;
+  --color-surface: #ffffff;
+  --color-border: #e2e2e6;
+  --color-text: #1c1c1f;
+  --color-muted: #6b6b76;
+  --color-primary: #3d5afe;
+  --color-primary-dark: #2c3fc9;
+  --color-danger: #d33a3a;
+  --color-accent-bg: #eef0ff;
+  --color-accent-text: #2c3fc9;
+  --color-warning-bg: #fff2f2;
+}
+:root[data-theme='dark'] {
+  --color-bg: #14151a;
+  --color-surface: #1c1e26;
+  --color-border: #2f323d;
+  --color-text: #e7e8ec;
+  --color-muted: #9a9ea8;
+  --color-primary: #7b93ff;
+  --color-primary-dark: #97aaff;
+  --color-danger: #ff7a7a;
+  --color-accent-bg: #262b45;
+  --color-accent-text: #a9b8ff;
+  --color-warning-bg: #3a2230;
 }
 
 * {
@@ -20,6 +68,7 @@ body {
   background: var(--color-bg);
   color: var(--color-text);
   line-height: 1.6;
+  transition: background-color 0.15s ease, color 0.15s ease;
 }
 
 a {
@@ -83,6 +132,8 @@ a:hover {
   border-radius: var(--radius);
   font-size: 0.9rem;
   width: 180px;
+  background: var(--color-surface);
+  color: var(--color-text);
 }
 .nav-auth {
   display: flex;
@@ -92,6 +143,19 @@ a:hover {
 .nav-user {
   color: var(--color-muted);
   font-size: 0.85rem;
+}
+.standalone-theme-toggle {
+  position: fixed;
+  top: 16px;
+  right: 16px;
+}
+.theme-select {
+  padding: 5px 8px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  font-size: 0.85rem;
+  background: var(--color-surface);
+  color: var(--color-text);
 }
 
 .container {
@@ -161,8 +225,8 @@ a:hover {
 }
 .cat-badge {
   display: inline-block;
-  background: #eef0ff;
-  color: var(--color-primary-dark);
+  background: var(--color-accent-bg);
+  color: var(--color-accent-text);
   border-radius: 6px;
   padding: 2px 8px;
   font-size: 0.75rem;
@@ -246,6 +310,8 @@ a:hover {
   border: 1px solid var(--color-border);
   border-radius: var(--radius);
   font-size: 0.95rem;
+  background: var(--color-surface);
+  color: var(--color-text);
 }
 .btn {
   display: inline-block;
@@ -297,6 +363,8 @@ a:hover {
   border: 1px solid var(--color-border);
   border-radius: var(--radius);
   font-size: 0.92rem;
+  background: var(--color-surface);
+  color: var(--color-text);
 }
 .editor-toolbar input[data-role='title'] {
   flex: 1;
@@ -324,13 +392,21 @@ table.log-table td {
   text-align: left;
 }
 table.log-table tr.alert-row {
-  background: #fff2f2;
+  background: var(--color-warning-bg);
 }
 .filters-bar {
   display: flex;
   gap: 10px;
   margin-bottom: 16px;
   flex-wrap: wrap;
+}
+.filters-bar select {
+  padding: 8px 10px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  font-size: 0.9rem;
+  background: var(--color-surface);
+  color: var(--color-text);
 }
 .pagination {
   display: flex;

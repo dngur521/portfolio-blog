@@ -10,7 +10,7 @@
     const adminActionsHtml = isAuthenticated
       ? `
         <div class="post-admin-actions">
-          <a class="btn btn-secondary" href="/admin/editor.html?category=${encodeURIComponent(post.category.slug)}&slug=${encodeURIComponent(post.slug)}">수정</a>
+          <a class="btn btn-secondary" href="/admin/editor?category=${encodeURIComponent(post.category.slug)}&slug=${encodeURIComponent(post.slug)}">수정</a>
           <button class="btn btn-danger" id="delete-post-btn">삭제</button>
         </div>
       `
@@ -18,7 +18,7 @@
 
     $('#post-container').html(`
       <div class="post-detail-header">
-        <a class="cat-badge" href="/category.html?slug=${encodeURIComponent(post.category.slug)}">${Blog.escapeHtml(post.category.name)}</a>
+        <a class="cat-badge" href="/category?slug=${encodeURIComponent(post.category.slug)}">${Blog.escapeHtml(post.category.name)}</a>
         <h1>${Blog.escapeHtml(post.title)}</h1>
         <div class="post-meta">
           <span>작성일 ${Blog.formatDate(post.publishedAt)}</span>

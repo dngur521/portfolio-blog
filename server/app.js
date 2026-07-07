@@ -33,7 +33,15 @@ app.use(
     contentSecurityPolicy: {
       directives: {
         defaultSrc: ["'self'"],
-        scriptSrc: ["'self'", 'https://code.jquery.com', 'https://cdn.jsdelivr.net', 'https://uicdn.toast.com'],
+        // 'sha256-...'는 각 페이지 <head>의 다크모드 FOUC 방지 인라인 스크립트(테마를 body 렌더링 전에
+        // 적용하는 코드, public/*.html 참고) 전용 해시다. 그 스크립트 내용을 바꾸면 해시도 다시 계산해야 한다.
+        scriptSrc: [
+          "'self'",
+          'https://code.jquery.com',
+          'https://cdn.jsdelivr.net',
+          'https://uicdn.toast.com',
+          "'sha256-Uw/JSbeuICvK0EzyGYba6LuIn82IYoIVXtLwcuOdBdI='",
+        ],
         styleSrc: ["'self'", "'unsafe-inline'", 'https://cdn.jsdelivr.net', 'https://uicdn.toast.com'],
         fontSrc: ["'self'", 'https://cdn.jsdelivr.net', 'data:'],
         imgSrc: ["'self'", 'data:', 'blob:'],
@@ -116,7 +124,16 @@ app.get('/uploads/images/:year/:month/:filename', (req, res) => {
   });
 });
 
-app.use(express.static(path.resolve(PROJECT_ROOT, 'public')));
+// 깔끔한 URL을 위해 .html로 직접 접근하면 확장자 없는 경로로 리다이렉트한다
+// (/about.html -> /about, /index.html -> /).
+app.get(/\.html$/, (req, res) => {
+  const withoutExt = req.path.slice(0, -'.html'.length) || '/';
+  const target = withoutExt === '/index' ? '/' : withoutExt;
+  const query = req.url.slice(req.path.length);
+  res.redirect(301, target + query);
+});
+
+app.use(express.static(path.resolve(PROJECT_ROOT, 'public'), { extensions: ['html'] }));
 
 app.use('/api', (req, res) => {
   res.status(404).json({ error: true, message: '요청한 API를 찾을 수 없습니다.' });

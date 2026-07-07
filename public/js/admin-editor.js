@@ -107,7 +107,7 @@
         );
         Blog.showToast('글이 수정되었습니다.', 'success');
       }
-      window.location.href = `/post.html?category=${encodeURIComponent(result.category.slug)}&slug=${encodeURIComponent(result.slug)}`;
+      window.location.href = `/post?category=${encodeURIComponent(result.category.slug)}&slug=${encodeURIComponent(result.slug)}`;
     } catch (err) {
       $('#editor-error').text(err.message);
     }

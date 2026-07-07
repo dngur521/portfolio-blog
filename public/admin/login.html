@@ -3,10 +3,18 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <script>(function(){try{var t=localStorage.getItem("theme");if(t==="light"||t==="dark")document.documentElement.setAttribute("data-theme",t);}catch(e){}})();</script>
   <title>관리자 로그인 - 김우혁의 블로그</title>
   <link rel="stylesheet" href="/css/style.css" />
 </head>
 <body>
+  <div class="standalone-theme-toggle">
+    <select id="theme-select" class="theme-select" aria-label="테마 선택">
+      <option value="auto">자동</option>
+      <option value="light">라이트</option>
+      <option value="dark">다크</option>
+    </select>
+  </div>
   <main>
     <form class="form-card" id="login-form">
       <h1 class="page-title">관리자 로그인</h1>

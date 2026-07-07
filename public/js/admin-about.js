@@ -27,7 +27,7 @@
           body: { content: editor.getMarkdown() },
         });
         Blog.showToast('About 소개글이 저장되었습니다.', 'success');
-        window.location.href = '/about.html';
+        window.location.href = '/about';
       } catch (err) {
         $('#about-error').text(err.message);
       }
