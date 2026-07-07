@@ -17,7 +17,8 @@
   }
 
   async function loadCategories(selected) {
-    const data = await Blog.fetchJSON('/api/categories');
+    // 관리자 글쓰기 화면에서는 방금 만든 빈 카테고리도 선택할 수 있어야 하므로 전부 불러온다.
+    const data = await Blog.fetchJSON('/api/categories?includeEmpty=1');
     categories = data.categories || [];
     const $select = $('#post-category');
     $select.empty();
@@ -26,6 +27,13 @@
     });
     $select.append('<option value="__new__">+ 새 카테고리 만들기</option>');
     if (selected) $select.val(selected);
+    updateDeleteCategoryButtonVisibility();
+  }
+
+  function updateDeleteCategoryButtonVisibility() {
+    const value = $('#post-category').val();
+    const isRealCategory = value && value !== '__new__';
+    $('#delete-category-btn').toggle(Boolean(isRealCategory));
   }
 
   async function loadPostIntoEditor(categorySlug, slug) {
@@ -37,6 +45,8 @@
       $('#editor-heading').text('글 수정');
       $('#post-title').val(post.title);
       $('#post-category').val(post.category.slug);
+      hideNewCategoryForm();
+      updateDeleteCategoryButtonVisibility();
       $('#post-tags').val((post.tags || []).join(', '));
       editor.setMarkdown(post.content || '');
       $('#delete-btn').show();
@@ -72,6 +82,27 @@
     } else {
       hideNewCategoryForm();
     }
+    updateDeleteCategoryButtonVisibility();
+  }
+
+  async function handleDeleteCategory() {
+    const slug = $('#post-category').val();
+    if (!slug || slug === '__new__') return;
+
+    const category = categories.find((c) => c.slug === slug);
+    const label = category ? category.name : slug;
+    if (!window.confirm(`"${label}" 카테고리를 삭제하시겠습니까? (글이 있으면 삭제되지 않습니다)`)) return;
+
+    try {
+      await Blog.fetchJSON(`/api/admin/categories/${encodeURIComponent(slug)}`, { method: 'DELETE' });
+      Blog.showToast('카테고리가 삭제되었습니다.', 'success');
+      await loadCategories();
+      if ($('#post-category').val() === '__new__') {
+        showNewCategoryForm();
+      }
+    } catch (err) {
+      Blog.showToast(err.message, 'error');
+    }
   }
 
   async function handleCreateCategory() {
@@ -101,6 +132,7 @@
     }
     hideNewCategoryForm();
     $('#post-category').val(categories[0].slug);
+    updateDeleteCategoryButtonVisibility();
   }
 
   async function handleSave() {
@@ -213,6 +245,7 @@
     });
 
     $('#post-category').on('change', handleCategoryChange);
+    $('#delete-category-btn').on('click', handleDeleteCategory);
     $('#new-category-confirm').on('click', handleCreateCategory);
     $('#new-category-cancel').on('click', handleCancelNewCategory);
     $('#save-btn').on('click', handleSave);

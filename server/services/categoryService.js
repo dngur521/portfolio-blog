@@ -5,13 +5,17 @@ const { assertValidSlug, safeResolve } = require('../utils/sanitizeSlug');
 
 const POSTS_ROOT = path.resolve(__dirname, '..', '..', 'posts');
 
-async function listCategories() {
+// includeEmpty가 false(기본)면 글이 하나도 없는 카테고리는 방문자에게 노출하지 않는다.
+// 관리자 글쓰기 화면처럼 막 만든 빈 카테고리도 선택할 수 있어야 하는 곳에서는 true로 조회한다.
+async function listCategories({ includeEmpty = false } = {}) {
+  const havingClause = includeEmpty ? '' : 'HAVING post_count > 0';
   const [rows] = await pool.execute(
     `SELECT c.id, c.slug, c.name, c.sort_order,
             COUNT(p.id) AS post_count
      FROM categories c
      LEFT JOIN posts p ON p.category_id = c.id
      GROUP BY c.id, c.slug, c.name, c.sort_order
+     ${havingClause}
      ORDER BY c.sort_order ASC, c.name ASC`
   );
   return rows.map((row) => ({

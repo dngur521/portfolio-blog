@@ -4,7 +4,8 @@ const categoryService = require('../services/categoryService');
 
 router.get('/', async (req, res, next) => {
   try {
-    const categories = await categoryService.listCategories();
+    const includeEmpty = req.query.includeEmpty === '1' || req.query.includeEmpty === 'true';
+    const categories = await categoryService.listCategories({ includeEmpty });
     res.json({ categories });
   } catch (err) {
     next(err);
