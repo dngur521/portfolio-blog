@@ -34,4 +34,10 @@ There is no test suite, lint config, or build step — this is a plain Node/Expr
 
 **Slugs / path safety**: `server/utils/sanitizeSlug.js` provides `assertValidSlug` (enforces `^[a-z0-9-]+$`) and `safeResolve` (resolves a path and verifies it stays inside the intended root dir). Any code building a filesystem path from a category/post slug or upload filename must go through these — this is the app's main defense against path traversal.
 
-**Deployment**: runs as the `portfolio-blog` systemd service (unit file checked into `deploy/portfolio-blog.service`, installed to `/etc/systemd/system/`), listening on `PORT` from `.env` (default 3000) as the `kam` user. Public hostname routing is `blog.doomfan.win` → `localhost:3000` via the Cloudflare Tunnel named `nextcloud`.
+**About page**: unlike posts, the "About me" content (`server/services/aboutService.js`, `GET /api/about`, `PUT /api/admin/about`) has no DB row at all — it's a single Markdown file at `content/about.md`, written via a plain temp-file-then-`rename` (no DB transaction needed since there's no metadata to keep in sync). Don't force this into the `posts` table/category system; it's intentionally simpler because it has no title/slug/tags/search-indexing needs.
+
+**Deployment**: runs as the `portfolio-blog` systemd service (unit file checked into `deploy/portfolio-blog.service`, installed to `/etc/systemd/system/`), as the `kam` user. **Binds to `127.0.0.1` only** (`app.listen(port, '127.0.0.1', ...)` in `server/app.js`) — this was originally omitted and bound to all interfaces, which let LAN/external traffic reach the app directly bypassing Cloudflare; don't remove the explicit host argument. Public hostname routing is `blog.doomfan.win` → `localhost:3000` via the Cloudflare Tunnel named `nextcloud` (dashboard-managed, see the tunnel's Public Hostname config in the Cloudflare Zero Trust dashboard — not in any file on disk).
+
+## Git commits
+
+Commit subjects in this repo use `<emoji> <type>: <summary>` (conventional-commit type, e.g. `feat`, `fix`, `security`, `docs`) — e.g. `🔒 fix: bind server to 127.0.0.1 only`.
