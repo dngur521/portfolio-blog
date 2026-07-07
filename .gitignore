@@ -5,3 +5,4 @@ uploads/images/**
 !uploads/images/.gitkeep
 *.log
 .DS_Store
+123.txt
