@@ -27,7 +27,8 @@
   $(async function () {
     const slug = Blog.qs('slug') || '';
     Blog.bindPostCardNavigation('#post-list');
-    await Blog.renderNav(slug);
+    const status = await Blog.renderNav(slug);
+    if (status.authenticated) $('#write-post-btn').show();
     await Blog.renderCategoryDropdown('category-filter', slug);
     await loadCategoryTitle(slug);
     await loadPosts(slug);

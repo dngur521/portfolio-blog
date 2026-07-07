@@ -28,48 +28,21 @@
     if (selected) $select.val(selected);
   }
 
-  async function loadSidebarPosts(activeCategory, activeSlug) {
-    const data = await Blog.fetchJSON('/api/posts');
-    const posts = data.posts || [];
-    const $sidebar = $('#post-list-sidebar');
-    $sidebar.empty();
-    posts.forEach((post) => {
-      const active = post.category.slug === activeCategory && post.slug === activeSlug;
-      const $item = $(
-        `<div class="editor-post-item${active ? ' active' : ''}">${Blog.escapeHtml(post.title)}</div>`
-      );
-      $item.on('click', () => loadPostIntoEditor(post.category.slug, post.slug));
-      $sidebar.append($item);
-    });
-  }
-
-  function resetEditor() {
-    mode = 'create';
-    editingCategory = null;
-    editingSlug = null;
-    $('#post-title').val('');
-    $('#post-tags').val('');
-    editor.setMarkdown('');
-    $('#delete-btn').hide();
-    $('#editor-error').text('');
-    loadSidebarPosts(null, null);
-  }
-
   async function loadPostIntoEditor(categorySlug, slug) {
     try {
       const post = await Blog.fetchJSON(`/api/posts/${encodeURIComponent(categorySlug)}/${encodeURIComponent(slug)}`);
       mode = 'edit';
       editingCategory = categorySlug;
       editingSlug = slug;
+      $('#editor-heading').text('글 수정');
       $('#post-title').val(post.title);
       $('#post-category').val(post.category.slug);
       $('#post-tags').val((post.tags || []).join(', '));
       editor.setMarkdown(post.content || '');
       $('#delete-btn').show();
-      $('#editor-error').text('');
-      await loadSidebarPosts(categorySlug, slug);
     } catch (err) {
-      Blog.showToast(err.message, 'error');
+      Blog.showToast('글을 불러오지 못했습니다: ' + err.message, 'error');
+      window.location.href = '/';
     }
   }
 
@@ -119,27 +92,22 @@
     }
 
     try {
+      let result;
       if (mode === 'create') {
         const slug = slugify(title);
-        const created = await Blog.fetchJSON('/api/admin/posts', {
+        result = await Blog.fetchJSON('/api/admin/posts', {
           method: 'POST',
           body: { title, category, slug, tags, content },
         });
-        mode = 'edit';
-        editingCategory = created.category.slug;
-        editingSlug = created.slug;
-        $('#delete-btn').show();
         Blog.showToast('글이 저장되었습니다.', 'success');
       } else {
-        const updated = await Blog.fetchJSON(
+        result = await Blog.fetchJSON(
           `/api/admin/posts/${encodeURIComponent(editingCategory)}/${encodeURIComponent(editingSlug)}`,
           { method: 'PUT', body: { title, category, tags, content } }
         );
-        editingCategory = updated.category.slug;
-        editingSlug = updated.slug;
         Blog.showToast('글이 수정되었습니다.', 'success');
       }
-      await loadSidebarPosts(editingCategory, editingSlug);
+      window.location.href = `/post.html?category=${encodeURIComponent(result.category.slug)}&slug=${encodeURIComponent(result.slug)}`;
     } catch (err) {
       $('#editor-error').text(err.message);
     }
@@ -155,7 +123,7 @@
         { method: 'DELETE' }
       );
       Blog.showToast('글이 삭제되었습니다.', 'success');
-      resetEditor();
+      window.location.href = '/';
     } catch (err) {
       Blog.showToast(err.message, 'error');
     }
@@ -174,8 +142,8 @@
   }
 
   $(async function () {
-    const status = await Blog.renderAdminNav('editor');
-    if (!status) return;
+    const status = await Blog.renderNav(null, 'editor');
+    if (Blog.redirectIfNotAuthenticated(status)) return;
 
     editor = new toastui.Editor({
       el: document.querySelector('#toastui-editor'),
@@ -187,12 +155,17 @@
       },
     });
 
+    const category = Blog.qs('category');
+    const slug = Blog.qs('slug');
+
     await loadCategories();
-    await loadSidebarPosts(null, null);
+
+    if (category && slug) {
+      await loadPostIntoEditor(category, slug);
+    }
 
     $('#post-category').on('change', handleCategoryChange);
     $('#save-btn').on('click', handleSave);
     $('#delete-btn').on('click', handleDelete);
-    $('#new-post-btn').on('click', resetEditor);
   });
 })();

@@ -99,16 +99,23 @@
     setTimeout(() => toast.remove(), 4000);
   }
 
+  // 로그인 여부와 무관하게 항상 같은 공개 화면을 기본으로 보여주고,
+  // 로그인된 경우에만 로그아웃/관리 링크를 얹어주는 단일 네비게이션.
   async function renderNav(activeCategorySlug, activePage) {
     const nav = document.getElementById('site-nav');
-    if (!nav) return;
+    if (!nav) return { authenticated: false };
 
     let categories = [];
+    let status = { authenticated: false };
     try {
-      const data = await fetchJSON('/api/categories');
-      categories = data.categories || [];
+      const [catData, authData] = await Promise.all([
+        fetchJSON('/api/categories'),
+        fetchJSON('/api/auth/status'),
+      ]);
+      categories = catData.categories || [];
+      status = authData;
     } catch (e) {
-      categories = [];
+      // 조회 실패 시 비로그인 상태의 기본 화면으로 진행
     }
 
     const catLinks = categories
@@ -121,6 +128,15 @@
     const allActive = activePage === 'all' ? ' active' : '';
     const aboutActive = activePage === 'about' ? ' active' : '';
 
+    const authControlsHtml = status.authenticated
+      ? `
+        <a class="nav-cat${activePage === 'logs' ? ' active' : ''}" href="/admin/logs.html">로그인 이력</a>
+        <a class="nav-cat${activePage === 'accounts' ? ' active' : ''}" href="/admin/accounts.html">계정 관리</a>
+        <span class="nav-user">${escapeHtml(status.displayName || status.username)}</span>
+        <button class="btn btn-secondary" id="nav-logout-btn">로그아웃</button>
+      `
+      : `<a class="btn btn-secondary" href="/admin/login.html">관리자 로그인</a>`;
+
     nav.innerHTML = `
       <div class="nav-inner">
         <a class="site-title" href="/">김우혁의 블로그</a>
@@ -132,7 +148,7 @@
         <form class="nav-search" id="nav-search-form">
           <input type="search" id="nav-search-input" placeholder="검색..." maxlength="100" />
         </form>
-        <a class="btn btn-secondary" href="/admin/login.html">관리자 로그인</a>
+        <div class="nav-auth">${authControlsHtml}</div>
       </div>
     `;
 
@@ -144,6 +160,27 @@
         window.location.href = `/search.html?q=${encodeURIComponent(q)}`;
       }
     });
+
+    if (status.authenticated) {
+      document.getElementById('nav-logout-btn').addEventListener('click', async () => {
+        try {
+          await fetchJSON('/api/auth/logout', { method: 'POST' });
+        } finally {
+          window.location.href = '/';
+        }
+      });
+    }
+
+    return status;
+  }
+
+  // 관리자 전용 페이지(글 편집/About 편집/로그/계정)에서 사용: 비로그인이면 로그인 페이지로 보낸다.
+  function redirectIfNotAuthenticated(status) {
+    if (!status || !status.authenticated) {
+      window.location.href = '/admin/login.html';
+      return true;
+    }
+    return false;
   }
 
   async function renderCategoryDropdown(elId, activeSlug) {
@@ -170,55 +207,6 @@
       const val = el.value;
       window.location.href = val ? `/category.html?slug=${encodeURIComponent(val)}` : '/';
     });
-  }
-
-  async function renderAdminNav(activeLink) {
-    const nav = document.getElementById('admin-nav');
-    if (!nav) return null;
-
-    let status;
-    try {
-      status = await fetchJSON('/api/auth/status');
-    } catch (e) {
-      status = { authenticated: false };
-    }
-
-    if (!status.authenticated) {
-      window.location.href = '/admin/login.html';
-      return null;
-    }
-
-    const links = [
-      { href: '/admin/editor.html', key: 'editor', label: '글 작성' },
-      { href: '/admin/about.html', key: 'about', label: 'About 수정' },
-      { href: '/admin/logs.html', key: 'logs', label: '로그인 이력' },
-      { href: '/admin/accounts.html', key: 'accounts', label: '계정 관리' },
-    ];
-
-    const linkHtml = links
-      .map((l) => `<a class="nav-cat${l.key === activeLink ? ' active' : ''}" href="${l.href}">${l.label}</a>`)
-      .join('');
-
-    nav.innerHTML = `
-      <div class="nav-inner">
-        <a class="site-title" href="/admin/editor.html">김우혁의 블로그 관리자</a>
-        <div class="nav-categories">${linkHtml}</div>
-        <div>
-          <span style="margin-right:10px;color:var(--color-muted);font-size:0.85rem;">${escapeHtml(status.displayName || status.username)}</span>
-          <button class="btn btn-secondary" id="admin-logout-btn">로그아웃</button>
-        </div>
-      </div>
-    `;
-
-    document.getElementById('admin-logout-btn').addEventListener('click', async () => {
-      try {
-        await fetchJSON('/api/auth/logout', { method: 'POST' });
-      } finally {
-        window.location.href = '/admin/login.html';
-      }
-    });
-
-    return status;
   }
 
   function postCardHtml(post) {
@@ -253,7 +241,7 @@
     showToast,
     renderNav,
     renderCategoryDropdown,
-    renderAdminNav,
+    redirectIfNotAuthenticated,
     getCsrfToken,
     postCardHtml,
     bindPostCardNavigation,

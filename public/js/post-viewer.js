@@ -1,11 +1,20 @@
 (function () {
-  function renderPost(post) {
+  function renderPost(post, isAuthenticated) {
     const tags = (post.tags || [])
       .map((t) => `<span class="tag-chip">#${Blog.escapeHtml(t)}</span>`)
       .join('');
 
     const rawHtml = marked.parse(post.content || '');
     const safeHtml = DOMPurify.sanitize(rawHtml);
+
+    const adminActionsHtml = isAuthenticated
+      ? `
+        <div class="post-admin-actions">
+          <a class="btn btn-secondary" href="/admin/editor.html?category=${encodeURIComponent(post.category.slug)}&slug=${encodeURIComponent(post.slug)}">수정</a>
+          <button class="btn btn-danger" id="delete-post-btn">삭제</button>
+        </div>
+      `
+      : '';
 
     $('#post-container').html(`
       <div class="post-detail-header">
@@ -15,6 +24,7 @@
           <span>작성일 ${Blog.formatDate(post.publishedAt)}</span>
         </div>
         <div class="tag-list">${tags}</div>
+        ${adminActionsHtml}
       </div>
       <article class="post-body">${safeHtml}</article>
     `);
@@ -22,6 +32,22 @@
     if (window.hljs) {
       document.querySelectorAll('.post-body pre code').forEach((block) => {
         window.hljs.highlightElement(block);
+      });
+    }
+
+    if (isAuthenticated) {
+      $('#delete-post-btn').on('click', async () => {
+        if (!window.confirm('정말 삭제하시겠습니까?')) return;
+        try {
+          await Blog.fetchJSON(
+            `/api/admin/posts/${encodeURIComponent(post.category.slug)}/${encodeURIComponent(post.slug)}`,
+            { method: 'DELETE' }
+          );
+          Blog.showToast('글이 삭제되었습니다.', 'success');
+          window.location.href = '/';
+        } catch (err) {
+          Blog.showToast(err.message, 'error');
+        }
       });
     }
   }
@@ -34,11 +60,11 @@
     const category = Blog.qs('category') || '';
     const slug = Blog.qs('slug') || '';
 
-    await Blog.renderNav(category);
+    const status = await Blog.renderNav(category);
 
     try {
       const post = await Blog.fetchJSON(`/api/posts/${encodeURIComponent(category)}/${encodeURIComponent(slug)}`);
-      renderPost(post);
+      renderPost(post, status.authenticated);
     } catch (err) {
       renderNotFound();
     }

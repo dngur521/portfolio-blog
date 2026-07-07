@@ -3,7 +3,7 @@
     try {
       const status = await Blog.fetchJSON('/api/auth/status');
       if (status.authenticated) {
-        window.location.href = '/admin/editor.html';
+        window.location.href = '/';
         return;
       }
     } catch (err) {
@@ -22,7 +22,7 @@
           method: 'POST',
           body: { username, password },
         });
-        window.location.href = '/admin/editor.html';
+        window.location.href = '/';
       } catch (err) {
         $('#login-error').text(err.message);
       }

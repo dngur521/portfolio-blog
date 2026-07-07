@@ -1,7 +1,7 @@
 (function () {
   $(async function () {
-    const status = await Blog.renderAdminNav('about');
-    if (!status) return;
+    const status = await Blog.renderNav(null, 'about');
+    if (Blog.redirectIfNotAuthenticated(status)) return;
 
     let initialContent = '';
     try {
@@ -27,6 +27,7 @@
           body: { content: editor.getMarkdown() },
         });
         Blog.showToast('About 소개글이 저장되었습니다.', 'success');
+        window.location.href = '/about.html';
       } catch (err) {
         $('#about-error').text(err.message);
       }

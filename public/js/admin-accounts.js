@@ -40,8 +40,8 @@
   }
 
   $(async function () {
-    const status = await Blog.renderAdminNav('accounts');
-    if (!status) return;
+    const status = await Blog.renderNav(null, 'accounts');
+    if (Blog.redirectIfNotAuthenticated(status)) return;
     await loadAccounts();
   });
 })();

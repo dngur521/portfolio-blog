@@ -84,6 +84,15 @@ a:hover {
   font-size: 0.9rem;
   width: 180px;
 }
+.nav-auth {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.nav-user {
+  color: var(--color-muted);
+  font-size: 0.85rem;
+}
 
 .container {
   max-width: 960px;
@@ -105,6 +114,11 @@ a:hover {
 }
 .page-header .page-title {
   margin-bottom: 0;
+}
+.page-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 .category-filter {
   padding: 8px 10px;
@@ -184,6 +198,11 @@ a:hover {
 .post-detail-header h1 {
   margin: 8px 0;
 }
+.post-admin-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 12px;
+}
 .post-body {
   background: var(--color-surface);
   border: 1px solid var(--color-border);
@@ -256,39 +275,15 @@ a:hover {
   min-height: 1.2em;
 }
 
-.editor-layout {
-  display: grid;
-  grid-template-columns: 260px 1fr;
-  gap: 24px;
-}
-.editor-sidebar {
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius);
-  padding: 14px;
-  max-height: 80vh;
-  overflow-y: auto;
-}
-.editor-sidebar h3 {
-  margin-top: 0;
-  font-size: 0.9rem;
-  color: var(--color-muted);
-}
-.editor-post-item {
-  padding: 8px 6px;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 0.88rem;
-}
-.editor-post-item:hover,
-.editor-post-item.active {
-  background: var(--color-bg);
-}
 .editor-main {
   background: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: var(--radius);
   padding: 20px;
+  min-width: 0;
+}
+#toastui-editor {
+  max-width: 100%;
 }
 .editor-toolbar {
   display: flex;

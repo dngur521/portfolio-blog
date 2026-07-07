@@ -16,7 +16,8 @@
 
   $(async function () {
     Blog.bindPostCardNavigation('#post-list');
-    await Blog.renderNav(null, 'all');
+    const status = await Blog.renderNav(null, 'all');
+    if (status.authenticated) $('#write-post-btn').show();
     await Blog.renderCategoryDropdown('category-filter', '');
     await loadPosts();
   });

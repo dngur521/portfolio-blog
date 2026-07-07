@@ -11,7 +11,10 @@
   <main class="container">
     <div class="page-header">
       <h1 class="page-title">전체 글</h1>
-      <select id="category-filter" class="category-filter"></select>
+      <div class="page-header-actions">
+        <select id="category-filter" class="category-filter"></select>
+        <a class="btn" id="write-post-btn" href="/admin/editor.html" style="display:none;">+ 새 글 작성</a>
+      </div>
     </div>
     <div id="post-list" class="card-grid"></div>
   </main>

@@ -8,28 +8,22 @@
   <link rel="stylesheet" href="https://uicdn.toast.com/editor/latest/toastui-editor.min.css" />
 </head>
 <body>
-  <nav class="site-nav" id="admin-nav"></nav>
+  <nav class="site-nav" id="site-nav"></nav>
   <main class="container">
-    <div class="editor-layout">
-      <aside class="editor-sidebar">
-        <h3>내 글 목록</h3>
-        <button class="btn btn-secondary" id="new-post-btn" style="width:100%;margin-bottom:10px;">+ 새 글</button>
-        <div id="post-list-sidebar"></div>
-      </aside>
-      <section class="editor-main">
-        <div class="editor-toolbar">
-          <input type="text" data-role="title" id="post-title" placeholder="제목" />
-          <select id="post-category"></select>
-          <input type="text" id="post-tags" placeholder="태그 (콤마로 구분)" />
-        </div>
-        <div id="toastui-editor"></div>
-        <div class="form-error" id="editor-error"></div>
-        <div class="editor-actions">
-          <button class="btn" id="save-btn">저장</button>
-          <button class="btn btn-danger" id="delete-btn" style="display:none;">삭제</button>
-        </div>
-      </section>
-    </div>
+    <h1 class="page-title" id="editor-heading">새 글 작성</h1>
+    <section class="editor-main">
+      <div class="editor-toolbar">
+        <input type="text" data-role="title" id="post-title" placeholder="제목" />
+        <select id="post-category"></select>
+        <input type="text" id="post-tags" placeholder="태그 (콤마로 구분)" />
+      </div>
+      <div id="toastui-editor"></div>
+      <div class="form-error" id="editor-error"></div>
+      <div class="editor-actions">
+        <button class="btn" id="save-btn">저장</button>
+        <button class="btn btn-danger" id="delete-btn" style="display:none;">삭제</button>
+      </div>
+    </section>
   </main>
 
   <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>

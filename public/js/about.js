@@ -1,12 +1,18 @@
 (function () {
   $(async function () {
-    await Blog.renderNav(null, 'about');
+    const status = await Blog.renderNav(null, 'about');
+    const editButtonHtml = status.authenticated
+      ? '<a class="btn btn-secondary" href="/admin/about.html">수정</a>'
+      : '';
 
     try {
       const about = await Blog.fetchJSON('/api/about');
       const safeHtml = DOMPurify.sanitize(marked.parse(about.content || ''));
       $('#about-container').html(`
-        <h1 class="page-title">About me</h1>
+        <div class="page-header">
+          <h1 class="page-title">About me</h1>
+          ${editButtonHtml}
+        </div>
         <article class="post-body">${safeHtml}</article>
       `);
     } catch (err) {

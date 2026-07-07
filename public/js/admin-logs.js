@@ -85,8 +85,8 @@
   }
 
   $(async function () {
-    const status = await Blog.renderAdminNav('logs');
-    if (!status) return;
+    const status = await Blog.renderNav(null, 'logs');
+    if (Blog.redirectIfNotAuthenticated(status)) return;
 
     await loadAccountsFilter();
     $('#filter-username, #filter-event').on('change', () => loadLogs(1));
