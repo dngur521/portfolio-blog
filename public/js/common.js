@@ -214,6 +214,32 @@
     return false;
   }
 
+  function sortPosts(posts, field, order) {
+    const dir = order === 'asc' ? 1 : -1;
+    const sorted = [...posts];
+
+    sorted.sort((a, b) => {
+      if (field === 'title') {
+        return dir * a.title.localeCompare(b.title, 'ko');
+      }
+      const aTime = new Date(field === 'updated' ? a.updatedAt || a.publishedAt : a.publishedAt).getTime();
+      const bTime = new Date(field === 'updated' ? b.updatedAt || b.publishedAt : b.publishedAt).getTime();
+      return dir * (aTime - bTime);
+    });
+
+    return sorted;
+  }
+
+  // 정렬 드롭다운 2개(기준/방향)를 채워 넣고, 값이 바뀔 때마다 onChange(field, order)를 호출한다.
+  // 서버에 다시 요청하지 않고 이미 받아온 목록을 그대로 다시 정렬하는 용도라 즉시 반영된다.
+  function initSortControls(fieldElId, orderElId, onChange) {
+    const $field = $(`#${fieldElId}`);
+    const $order = $(`#${orderElId}`);
+    const trigger = () => onChange($field.val(), $order.val());
+    $field.on('change', trigger);
+    $order.on('change', trigger);
+  }
+
   async function renderCategoryDropdown(elId, activeSlug) {
     const el = document.getElementById(elId);
     if (!el) return;
@@ -272,6 +298,8 @@
     showToast,
     renderNav,
     renderCategoryDropdown,
+    sortPosts,
+    initSortControls,
     redirectIfNotAuthenticated,
     initThemeToggle,
     getCsrfToken,

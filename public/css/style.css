@@ -175,6 +175,7 @@ a:hover {
   display: flex;
   align-items: center;
   gap: 10px;
+  flex-wrap: wrap;
 }
 .category-filter {
   padding: 8px 10px;

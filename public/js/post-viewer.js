@@ -60,12 +60,14 @@
     const category = Blog.qs('category') || '';
     const slug = Blog.qs('slug') || '';
 
-    const status = await Blog.renderNav();
+    const [status, post] = await Promise.all([
+      Blog.renderNav(),
+      Blog.fetchJSON(`/api/posts/${encodeURIComponent(category)}/${encodeURIComponent(slug)}`).catch(() => null),
+    ]);
 
-    try {
-      const post = await Blog.fetchJSON(`/api/posts/${encodeURIComponent(category)}/${encodeURIComponent(slug)}`);
+    if (post) {
       renderPost(post, status.authenticated);
-    } catch (err) {
+    } else {
       renderNotFound();
     }
   });

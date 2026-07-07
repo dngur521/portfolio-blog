@@ -43,7 +43,7 @@ async function readPostFileContent(relativeFilePath) {
 }
 
 async function listPosts({ categorySlug } = {}) {
-  let sql = `SELECT p.id, p.slug, p.title, p.published_at,
+  let sql = `SELECT p.id, p.slug, p.title, p.published_at, p.updated_at,
                     c.slug AS category_slug, c.name AS category_name
              FROM posts p JOIN categories c ON c.id = p.category_id`;
   const params = [];
@@ -64,6 +64,7 @@ async function listPosts({ categorySlug } = {}) {
     category: { slug: row.category_slug, name: row.category_name },
     tags: tagsMap.get(row.id) || [],
     publishedAt: row.published_at,
+    updatedAt: row.updated_at,
   }));
 }
 

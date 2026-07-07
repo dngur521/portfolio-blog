@@ -14,6 +14,15 @@
       <h1 class="page-title" id="category-title">카테고리</h1>
       <div class="page-header-actions">
         <select id="category-filter" class="category-filter"></select>
+        <select id="sort-field" class="category-filter">
+          <option value="date">날짜순</option>
+          <option value="updated">수정순</option>
+          <option value="title">이름순</option>
+        </select>
+        <select id="sort-order" class="category-filter">
+          <option value="desc">내림차순</option>
+          <option value="asc">오름차순</option>
+        </select>
         <a class="btn" id="write-post-btn" href="/admin/editor" style="display:none;">+ 새 글 작성</a>
       </div>
     </div>

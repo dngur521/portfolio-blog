@@ -37,8 +37,7 @@
   $(async function () {
     const q = Blog.qs('q') || '';
     Blog.bindPostCardNavigation('#search-results');
-    await Blog.renderNav();
+    await Promise.all([Blog.renderNav(), runSearch(q)]);
     $('#nav-search-input').val(q);
-    await runSearch(q);
   });
 })();

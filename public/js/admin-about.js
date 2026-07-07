@@ -3,21 +3,21 @@
     const status = await Blog.renderNav('about');
     if (Blog.redirectIfNotAuthenticated(status)) return;
 
-    let initialContent = '';
-    try {
-      const about = await Blog.fetchJSON('/api/about');
-      initialContent = about.content || '';
-    } catch (err) {
+    // 에디터 생성(무거운 DOM 작업)과 기존 글 조회를 동시에 진행한다.
+    const aboutPromise = Blog.fetchJSON('/api/about').catch((err) => {
       Blog.showToast(err.message, 'error');
-    }
+      return { content: '' };
+    });
 
     const editor = new toastui.Editor({
       el: document.querySelector('#toastui-editor'),
       height: '520px',
       initialEditType: 'markdown',
       previewStyle: 'vertical',
-      initialValue: initialContent,
     });
+
+    const about = await aboutPromise;
+    editor.setMarkdown(about.content || '');
 
     $('#save-btn').on('click', async () => {
       $('#about-error').text('');

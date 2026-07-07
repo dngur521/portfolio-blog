@@ -88,8 +88,7 @@
     const status = await Blog.renderNav('logs');
     if (Blog.redirectIfNotAuthenticated(status)) return;
 
-    await loadAccountsFilter();
     $('#filter-username, #filter-event').on('change', () => loadLogs(1));
-    await loadLogs(1);
+    await Promise.all([loadAccountsFilter(), loadLogs(1)]);
   });
 })();

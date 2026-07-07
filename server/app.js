@@ -133,7 +133,18 @@ app.get(/\.html$/, (req, res) => {
   res.redirect(301, target + query);
 });
 
-app.use(express.static(path.resolve(PROJECT_ROOT, 'public'), { extensions: ['html'] }));
+app.use(
+  express.static(path.resolve(PROJECT_ROOT, 'public'), {
+    extensions: ['html'],
+    // CSS/JS는 페이지를 옮겨 다닐 때마다 다시 받지 않도록 좀 더 오래 캐시한다.
+    // HTML은 지금도 계속 손보는 중이라 캐시를 걸지 않고 항상 최신 상태로 받게 둔다.
+    setHeaders: (res, filePath) => {
+      if (/\.(css|js)$/.test(filePath)) {
+        res.setHeader('Cache-Control', 'public, max-age=86400');
+      }
+    },
+  })
+);
 
 app.use('/api', (req, res) => {
   res.status(404).json({ error: true, message: '요청한 API를 찾을 수 없습니다.' });
