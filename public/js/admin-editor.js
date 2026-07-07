@@ -46,29 +46,61 @@
     }
   }
 
-  async function handleCategoryChange() {
-    if ($('#post-category').val() !== '__new__') return;
+  function categorySlugify(text) {
+    return text
+      .toLowerCase()
+      .trim()
+      .replace(/[^a-z0-9\s-]/g, '')
+      .replace(/\s+/g, '-')
+      .replace(/-+/g, '-')
+      .replace(/^-|-$/g, '');
+  }
 
-    const fallback = categories[0] ? categories[0].slug : '';
-    const slug = window.prompt('새 카테고리 slug (영문 소문자/숫자/하이픈만):');
-    if (!slug) {
-      $('#post-category').val(fallback);
-      return;
+  function showNewCategoryForm() {
+    $('#new-category-form').show();
+    $('#new-category-slug').val('');
+    $('#new-category-name').val('').focus();
+  }
+
+  function hideNewCategoryForm() {
+    $('#new-category-form').hide();
+  }
+
+  function handleCategoryChange() {
+    if ($('#post-category').val() === '__new__') {
+      showNewCategoryForm();
+    } else {
+      hideNewCategoryForm();
     }
-    const name = window.prompt('카테고리 이름:');
-    if (!name) {
-      $('#post-category').val(fallback);
+  }
+
+  async function handleCreateCategory() {
+    const slug = $('#new-category-slug').val().trim();
+    const name = $('#new-category-name').val().trim();
+
+    if (!slug || !name) {
+      Blog.showToast('카테고리 slug와 이름을 모두 입력해주세요.', 'error');
       return;
     }
 
     try {
       await Blog.fetchJSON('/api/admin/categories', { method: 'POST', body: { slug, name } });
       await loadCategories(slug);
+      hideNewCategoryForm();
       Blog.showToast('카테고리가 생성되었습니다.', 'success');
     } catch (err) {
       Blog.showToast(err.message, 'error');
-      await loadCategories(fallback);
     }
+  }
+
+  function handleCancelNewCategory() {
+    if (categories.length === 0) {
+      // 카테고리가 하나도 없으면 취소해도 선택할 다른 옵션이 없으므로 폼을 다시 보여준다.
+      showNewCategoryForm();
+      return;
+    }
+    hideNewCategoryForm();
+    $('#post-category').val(categories[0].slug);
   }
 
   async function handleSave() {
@@ -164,7 +196,25 @@
       await loadPostIntoEditor(category, slug);
     }
 
+    // 카테고리가 하나도 없으면 드롭다운에 "+ 새 카테고리 만들기"만 남으므로,
+    // change 이벤트를 기다리지 않고 바로 입력 폼을 보여준다.
+    if ($('#post-category').val() === '__new__') {
+      showNewCategoryForm();
+    }
+
+    $('#new-category-name').on('input', function () {
+      const $slugInput = $('#new-category-slug');
+      if (!$slugInput.data('touched')) {
+        $slugInput.val(categorySlugify($(this).val()));
+      }
+    });
+    $('#new-category-slug').on('input', function () {
+      $(this).data('touched', true);
+    });
+
     $('#post-category').on('change', handleCategoryChange);
+    $('#new-category-confirm').on('click', handleCreateCategory);
+    $('#new-category-cancel').on('click', handleCancelNewCategory);
     $('#save-btn').on('click', handleSave);
     $('#delete-btn').on('click', handleDelete);
   });
