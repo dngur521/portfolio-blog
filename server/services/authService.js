@@ -1,6 +1,6 @@
 const bcrypt = require('bcrypt');
 const accountService = require('./accountService');
-const authLogService = require('./authLogService');
+const activityLogService = require('./activityLogService');
 
 const GENERIC_FAIL_MESSAGE = '아이디 또는 비밀번호가 올바르지 않습니다.';
 
@@ -14,7 +14,7 @@ async function attemptLogin({ username, password, ip, userAgent }) {
   const admin = await accountService.getByUsername(username);
 
   if (!admin) {
-    await authLogService.logEvent({
+    await activityLogService.logEvent({
       usernameAttempted: username,
       eventType: 'LOGIN_FAIL',
       ip,
@@ -25,7 +25,7 @@ async function attemptLogin({ username, password, ip, userAgent }) {
   }
 
   if (!admin.is_active) {
-    await authLogService.logEvent({
+    await activityLogService.logEvent({
       adminId: admin.id,
       usernameAttempted: username,
       eventType: 'LOGIN_FAIL',
@@ -38,7 +38,7 @@ async function attemptLogin({ username, password, ip, userAgent }) {
 
   const passwordMatches = await bcrypt.compare(password, admin.password_hash);
   if (!passwordMatches) {
-    await authLogService.logEvent({
+    await activityLogService.logEvent({
       adminId: admin.id,
       usernameAttempted: username,
       eventType: 'LOGIN_FAIL',
@@ -49,7 +49,7 @@ async function attemptLogin({ username, password, ip, userAgent }) {
     throw genericFailError();
   }
 
-  await authLogService.logEvent({
+  await activityLogService.logEvent({
     adminId: admin.id,
     usernameAttempted: username,
     eventType: 'LOGIN_SUCCESS',
@@ -65,7 +65,7 @@ async function attemptLogin({ username, password, ip, userAgent }) {
 }
 
 async function logLogout({ adminId, username, ip, userAgent }) {
-  await authLogService.logEvent({
+  await activityLogService.logEvent({
     adminId,
     usernameAttempted: username,
     eventType: 'LOGOUT',

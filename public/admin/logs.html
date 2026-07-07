@@ -4,20 +4,27 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <script>(function(){try{var t=localStorage.getItem("theme");if(t==="light"||t==="dark")document.documentElement.setAttribute("data-theme",t);}catch(e){}})();</script>
-  <title>로그인 이력 - 김우혁의 블로그 관리자</title>
+  <title>이력 조회 - 김우혁의 블로그 관리자</title>
   <link rel="stylesheet" href="/css/style.css" />
 </head>
 <body>
   <nav class="site-nav" id="site-nav"></nav>
   <main class="container">
-    <h1 class="page-title">로그인 이력</h1>
+    <h1 class="page-title">이력 조회</h1>
     <div class="filters-bar">
       <select id="filter-username"><option value="">전체 계정</option></select>
       <select id="filter-event">
         <option value="">전체 이벤트</option>
-        <option value="LOGIN_SUCCESS">성공</option>
-        <option value="LOGIN_FAIL">실패</option>
-        <option value="LOGOUT">로그아웃</option>
+        <optgroup label="로그인">
+          <option value="LOGIN_SUCCESS">로그인 성공</option>
+          <option value="LOGIN_FAIL">로그인 실패</option>
+          <option value="LOGOUT">로그아웃</option>
+        </optgroup>
+        <optgroup label="글">
+          <option value="POST_CREATE">글 작성</option>
+          <option value="POST_UPDATE">글 수정</option>
+          <option value="POST_DELETE">글 삭제</option>
+        </optgroup>
       </select>
     </div>
     <table class="log-table">
@@ -26,9 +33,9 @@
           <th>시간</th>
           <th>계정</th>
           <th>이벤트</th>
+          <th>대상 / 사유</th>
           <th>IP</th>
           <th>User-Agent</th>
-          <th>실패 사유</th>
         </tr>
       </thead>
       <tbody id="log-table-body"></tbody>

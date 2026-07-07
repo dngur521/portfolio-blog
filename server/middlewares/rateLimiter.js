@@ -1,5 +1,5 @@
 const rateLimit = require('express-rate-limit');
-const authLogService = require('../services/authLogService');
+const activityLogService = require('../services/activityLogService');
 
 const loginRateLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
@@ -7,7 +7,7 @@ const loginRateLimiter = rateLimit({
   standardHeaders: true,
   legacyHeaders: false,
   handler: async (req, res) => {
-    await authLogService.logEvent({
+    await activityLogService.logEvent({
       usernameAttempted: (req.body && req.body.username) || '',
       eventType: 'LOGIN_FAIL',
       ip: req.ip,

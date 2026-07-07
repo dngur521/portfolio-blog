@@ -1,12 +1,35 @@
 const pool = require('../db/pool');
 
-const ALLOWED_EVENTS = ['LOGIN_SUCCESS', 'LOGIN_FAIL', 'LOGOUT'];
+const ALLOWED_EVENTS = [
+  'LOGIN_SUCCESS',
+  'LOGIN_FAIL',
+  'LOGOUT',
+  'POST_CREATE',
+  'POST_UPDATE',
+  'POST_DELETE',
+];
 
-async function logEvent({ adminId = null, usernameAttempted, eventType, ip, userAgent, failReason = null }) {
+async function logEvent({
+  adminId = null,
+  usernameAttempted,
+  eventType,
+  ip,
+  userAgent,
+  failReason = null,
+  target = null,
+}) {
   await pool.execute(
-    `INSERT INTO auth_logs (admin_id, username_attempted, event_type, ip_address, user_agent, fail_reason)
-     VALUES (?, ?, ?, ?, ?, ?)`,
-    [adminId, usernameAttempted, eventType, ip, userAgent ? String(userAgent).slice(0, 500) : null, failReason]
+    `INSERT INTO activity_logs (admin_id, username_attempted, event_type, ip_address, user_agent, fail_reason, target)
+     VALUES (?, ?, ?, ?, ?, ?, ?)`,
+    [
+      adminId,
+      usernameAttempted,
+      eventType,
+      ip,
+      userAgent ? String(userAgent).slice(0, 500) : null,
+      failReason,
+      target ? String(target).slice(0, 255) : null,
+    ]
   );
 }
 
@@ -29,15 +52,15 @@ async function listLogs({ username, event, page = 1, limit = 50 } = {}) {
   const offset = (safePage - 1) * safeLimit;
 
   const [countRows] = await pool.execute(
-    `SELECT COUNT(*) AS total FROM auth_logs ${whereClause}`,
+    `SELECT COUNT(*) AS total FROM activity_logs ${whereClause}`,
     params
   );
   const total = countRows[0].total;
   const totalPages = Math.max(1, Math.ceil(total / safeLimit));
 
   const [rows] = await pool.execute(
-    `SELECT id, username_attempted, event_type, ip_address, user_agent, fail_reason, created_at
-     FROM auth_logs ${whereClause}
+    `SELECT id, username_attempted, event_type, ip_address, user_agent, fail_reason, target, created_at
+     FROM activity_logs ${whereClause}
      ORDER BY created_at DESC
      LIMIT ? OFFSET ?`,
     [...params, safeLimit, offset]
@@ -51,6 +74,7 @@ async function listLogs({ username, event, page = 1, limit = 50 } = {}) {
       ip: row.ip_address,
       userAgent: row.user_agent,
       reason: row.fail_reason,
+      target: row.target,
       createdAt: row.created_at,
     })),
     page: safePage,

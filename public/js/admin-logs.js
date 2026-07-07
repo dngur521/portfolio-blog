@@ -1,5 +1,12 @@
 (function () {
-  const EVENT_LABELS = { LOGIN_SUCCESS: '성공', LOGIN_FAIL: '실패', LOGOUT: '로그아웃' };
+  const EVENT_LABELS = {
+    LOGIN_SUCCESS: '로그인 성공',
+    LOGIN_FAIL: '로그인 실패',
+    LOGOUT: '로그아웃',
+    POST_CREATE: '글 작성',
+    POST_UPDATE: '글 수정',
+    POST_DELETE: '글 삭제',
+  };
   const ALERT_WINDOW_MS = 60 * 1000;
 
   async function loadAccountsFilter() {
@@ -44,9 +51,9 @@
       $tr.append($('<td>').text(Blog.formatDateTime(log.createdAt)));
       $tr.append($('<td>').text(log.username));
       $tr.append($('<td>').text(EVENT_LABELS[log.event] || log.event));
+      $tr.append($('<td>').text(log.target || log.reason || ''));
       $tr.append($('<td>').text(log.ip));
       $tr.append($('<td>').text(log.userAgent || ''));
-      $tr.append($('<td>').text(log.reason || ''));
       $tbody.append($tr);
     });
   }

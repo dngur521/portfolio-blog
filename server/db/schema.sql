@@ -63,19 +63,24 @@ CREATE TABLE uploads (
   CONSTRAINT fk_uploads_admin FOREIGN KEY (uploaded_by) REFERENCES admins(id) ON DELETE RESTRICT
 ) ENGINE=InnoDB;
 
-CREATE TABLE auth_logs (
+-- 로그인/로그아웃 이력뿐 아니라 글 작성/수정/삭제 등 관리자 활동 전체를 기록한다.
+CREATE TABLE activity_logs (
   id BIGINT AUTO_INCREMENT PRIMARY KEY,
   admin_id INT NULL,
   username_attempted VARCHAR(50) NOT NULL,
-  event_type ENUM('LOGIN_SUCCESS', 'LOGIN_FAIL', 'LOGOUT') NOT NULL,
+  event_type ENUM(
+    'LOGIN_SUCCESS', 'LOGIN_FAIL', 'LOGOUT',
+    'POST_CREATE', 'POST_UPDATE', 'POST_DELETE'
+  ) NOT NULL,
   ip_address VARCHAR(45) NOT NULL,
   user_agent VARCHAR(500),
   fail_reason VARCHAR(50),
+  target VARCHAR(255),
   created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  CONSTRAINT fk_authlog_admin FOREIGN KEY (admin_id) REFERENCES admins(id) ON DELETE SET NULL,
-  INDEX idx_authlog_created_at (created_at),
-  INDEX idx_authlog_admin_id (admin_id),
-  INDEX idx_authlog_event_type (event_type)
+  CONSTRAINT fk_activitylog_admin FOREIGN KEY (admin_id) REFERENCES admins(id) ON DELETE SET NULL,
+  INDEX idx_activitylog_created_at (created_at),
+  INDEX idx_activitylog_admin_id (admin_id),
+  INDEX idx_activitylog_event_type (event_type)
 ) ENGINE=InnoDB;
 
 -- express-mysql-session 세션 저장 테이블 (blog_app 계정은 CREATE 권한이 없으므로 미리 생성)

@@ -155,7 +155,7 @@
 
     const authControlsHtml = status.authenticated
       ? `
-        <a class="nav-cat${activePage === 'logs' ? ' active' : ''}" href="/admin/logs">로그인 이력</a>
+        <a class="nav-cat${activePage === 'logs' ? ' active' : ''}" href="/admin/logs">이력 조회</a>
         <a class="nav-cat${activePage === 'accounts' ? ' active' : ''}" href="/admin/accounts">계정 관리</a>
         <span class="nav-user">${escapeHtml(status.displayName || status.username)}</span>
         <button class="btn btn-secondary" id="nav-logout-btn">로그아웃</button>
