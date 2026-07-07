@@ -122,8 +122,10 @@ app.use('/api', (req, res) => {
 
 app.use(errorHandler);
 
-app.listen(env.port, () => {
-  console.log(`portfolio-blog server listening on port ${env.port} (${env.nodeEnv})`);
+// Cloudflare Tunnel(cloudflared)이 localhost로만 접속하므로, 다른 인터페이스로는
+// 열지 않는다 (LAN/외부에서 3000번 포트로 직접 접근하는 것을 차단).
+app.listen(env.port, '127.0.0.1', () => {
+  console.log(`portfolio-blog server listening on 127.0.0.1:${env.port} (${env.nodeEnv})`);
 });
 
 module.exports = app;
