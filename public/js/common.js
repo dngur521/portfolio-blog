@@ -99,7 +99,7 @@
     setTimeout(() => toast.remove(), 4000);
   }
 
-  async function renderNav(activeCategorySlug) {
+  async function renderNav(activeCategorySlug, activePage) {
     const nav = document.getElementById('site-nav');
     if (!nav) return;
 
@@ -118,10 +118,17 @@
       })
       .join('');
 
+    const allActive = activePage === 'all' ? ' active' : '';
+    const aboutActive = activePage === 'about' ? ' active' : '';
+
     nav.innerHTML = `
       <div class="nav-inner">
         <a class="site-title" href="/">김우혁의 블로그</a>
-        <div class="nav-categories">${catLinks}</div>
+        <div class="nav-categories">
+          <a class="nav-cat${allActive}" href="/">전체 글 보기</a>
+          <a class="nav-cat${aboutActive}" href="/about.html">About me</a>
+          ${catLinks}
+        </div>
         <form class="nav-search" id="nav-search-form">
           <input type="search" id="nav-search-input" placeholder="검색..." maxlength="100" />
         </form>
@@ -136,6 +143,32 @@
       if (q) {
         window.location.href = `/search.html?q=${encodeURIComponent(q)}`;
       }
+    });
+  }
+
+  async function renderCategoryDropdown(elId, activeSlug) {
+    const el = document.getElementById(elId);
+    if (!el) return;
+
+    let categories = [];
+    try {
+      const data = await fetchJSON('/api/categories');
+      categories = data.categories || [];
+    } catch (e) {
+      categories = [];
+    }
+
+    const options = [`<option value="">카테고리별 보기</option>`].concat(
+      categories.map(
+        (c) => `<option value="${escapeHtml(c.slug)}">${escapeHtml(c.name)} (${c.postCount})</option>`
+      )
+    );
+    el.innerHTML = options.join('');
+    el.value = activeSlug || '';
+
+    el.addEventListener('change', () => {
+      const val = el.value;
+      window.location.href = val ? `/category.html?slug=${encodeURIComponent(val)}` : '/';
     });
   }
 
@@ -157,6 +190,7 @@
 
     const links = [
       { href: '/admin/editor.html', key: 'editor', label: '글 작성' },
+      { href: '/admin/about.html', key: 'about', label: 'About 수정' },
       { href: '/admin/logs.html', key: 'logs', label: '로그인 이력' },
       { href: '/admin/accounts.html', key: 'accounts', label: '계정 관리' },
     ];
@@ -218,6 +252,7 @@
     escapeHtml,
     showToast,
     renderNav,
+    renderCategoryDropdown,
     renderAdminNav,
     getCsrfToken,
     postCardHtml,

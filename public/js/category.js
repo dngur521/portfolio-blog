@@ -28,6 +28,7 @@
     const slug = Blog.qs('slug') || '';
     Blog.bindPostCardNavigation('#post-list');
     await Blog.renderNav(slug);
+    await Blog.renderCategoryDropdown('category-filter', slug);
     await loadCategoryTitle(slug);
     await loadPosts(slug);
   });

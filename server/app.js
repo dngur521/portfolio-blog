@@ -11,6 +11,7 @@ const env = require('./config/env');
 const postsRouter = require('./routes/posts');
 const categoriesRouter = require('./routes/categories');
 const searchRouter = require('./routes/search');
+const aboutRouter = require('./routes/about');
 const authRouter = require('./routes/auth');
 const adminRouter = require('./routes/admin');
 const adminUploadsRouter = require('./routes/adminUploads');
@@ -90,6 +91,7 @@ app.get('/api/csrf-token', (req, res) => {
 app.use('/api/posts', postsRouter);
 app.use('/api/categories', categoriesRouter);
 app.use('/api/search', searchRouter);
+app.use('/api/about', aboutRouter);
 app.use('/api/auth', authRouter);
 app.use('/api/admin', adminRouter);
 app.use('/api/admin/uploads', adminUploadsRouter);

@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const postService = require('../services/postService');
 const categoryService = require('../services/categoryService');
+const aboutService = require('../services/aboutService');
 const requireAuth = require('../middlewares/auth');
 
 router.use(requireAuth);
@@ -57,6 +58,16 @@ router.delete('/categories/:slug', async (req, res, next) => {
   try {
     await categoryService.deleteCategoryBySlug(req.params.slug);
     res.status(204).send();
+  } catch (err) {
+    next(err);
+  }
+});
+
+router.put('/about', async (req, res, next) => {
+  try {
+    const { content } = req.body || {};
+    const about = await aboutService.saveAbout(content);
+    res.json(about);
   } catch (err) {
     next(err);
   }

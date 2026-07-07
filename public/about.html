@@ -3,21 +3,19 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>김우혁의 블로그</title>
+  <title>About me - 김우혁의 블로그</title>
   <link rel="stylesheet" href="/css/style.css" />
 </head>
 <body>
   <nav class="site-nav" id="site-nav"></nav>
-  <main class="container">
-    <div class="page-header">
-      <h1 class="page-title">전체 글</h1>
-      <select id="category-filter" class="category-filter"></select>
-    </div>
-    <div id="post-list" class="card-grid"></div>
+  <main class="container" id="about-container">
+    <div class="empty-state">불러오는 중...</div>
   </main>
 
   <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/dompurify@3/dist/purify.min.js"></script>
   <script src="/js/common.js"></script>
-  <script src="/js/dashboard.js"></script>
+  <script src="/js/about.js"></script>
 </body>
 </html>
