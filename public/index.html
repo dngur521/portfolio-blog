@@ -23,13 +23,19 @@
           <option value="desc">내림차순</option>
           <option value="asc">오름차순</option>
         </select>
+        <select id="page-size" class="category-filter">
+          <option value="10">10개씩</option>
+          <option value="25">25개씩</option>
+          <option value="50">50개씩</option>
+        </select>
         <a class="btn" id="write-post-btn" href="/admin/editor" style="display:none;">+ 새 글 작성</a>
       </div>
     </div>
     <div id="post-list" class="card-grid"></div>
+    <div class="pagination" id="post-pagination"></div>
   </main>
 
-  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <script src="/vendor/jquery/jquery.min.js"></script>
   <script src="/js/common.js"></script>
   <script src="/js/dashboard.js"></script>
 </body>

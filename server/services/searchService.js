@@ -19,16 +19,21 @@ function buildSnippet(text, query, radius = 60) {
   return snippet;
 }
 
+function escapeLikePattern(str) {
+  return str.replace(/[\\%_]/g, (ch) => `\\${ch}`);
+}
+
 async function search(query) {
+  const pattern = `%${escapeLikePattern(query)}%`;
   const [rows] = await pool.execute(
     `SELECT p.id, p.slug, p.title, p.search_text,
             c.slug AS category_slug, c.name AS category_name,
-            MATCH(p.title, p.search_text) AGAINST (? IN NATURAL LANGUAGE MODE) AS relevance
+            (CASE WHEN p.title LIKE ? THEN 1 ELSE 0 END) AS title_match
      FROM posts p JOIN categories c ON c.id = p.category_id
-     WHERE MATCH(p.title, p.search_text) AGAINST (? IN NATURAL LANGUAGE MODE)
-     ORDER BY relevance DESC
+     WHERE p.title LIKE ? OR p.search_text LIKE ?
+     ORDER BY title_match DESC, p.published_at DESC
      LIMIT 50`,
-    [query, query]
+    [pattern, pattern, pattern]
   );
 
   return rows.map((row) => ({

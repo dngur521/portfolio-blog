@@ -135,6 +135,53 @@
     updateDeleteCategoryButtonVisibility();
   }
 
+  let savedPost = null;
+
+  function goToSavedPost() {
+    window.location.href = `/post?category=${encodeURIComponent(savedPost.category.slug)}&slug=${encodeURIComponent(savedPost.slug)}`;
+  }
+
+  async function showGitCommitPanel(changeType) {
+    $('#git-commit-panel').show();
+    $('#git-commit-status').text('');
+    $('#git-commit-btn').prop('disabled', false);
+    const $msg = $('#git-commit-message');
+    $msg.val('추천 메시지를 불러오는 중...').prop('disabled', true);
+    try {
+      const { message } = await Blog.fetchJSON('/api/admin/git/suggest-message', {
+        method: 'POST',
+        body: { category: savedPost.category.slug, slug: savedPost.slug, changeType },
+      });
+      $msg.val(message);
+    } catch (err) {
+      $msg.val('');
+      $('#git-commit-status').text('추천 메시지를 불러오지 못했습니다: ' + err.message);
+    } finally {
+      $msg.prop('disabled', false);
+    }
+  }
+
+  async function handleGitCommit() {
+    const message = $('#git-commit-message').val().trim();
+    if (!message) {
+      $('#git-commit-status').text('커밋 메시지를 입력해주세요.');
+      return;
+    }
+    $('#git-commit-btn').prop('disabled', true);
+    $('#git-commit-status').text('커밋 & 푸시 중...');
+    try {
+      await Blog.fetchJSON('/api/admin/git/commit-push', {
+        method: 'POST',
+        body: { category: savedPost.category.slug, slug: savedPost.slug, message },
+      });
+      Blog.showToast('커밋 & 푸시 완료.', 'success');
+      goToSavedPost();
+    } catch (err) {
+      $('#git-commit-status').text(err.message);
+      $('#git-commit-btn').prop('disabled', false);
+    }
+  }
+
   async function handleSave() {
     $('#editor-error').text('');
     const title = $('#post-title').val().trim();
@@ -157,21 +204,25 @@
 
     try {
       let result;
+      let changeType;
       if (mode === 'create') {
         const slug = slugify(title);
         result = await Blog.fetchJSON('/api/admin/posts', {
           method: 'POST',
           body: { title, category, slug, tags, content },
         });
+        changeType = 'create';
         Blog.showToast('글이 저장되었습니다.', 'success');
       } else {
         result = await Blog.fetchJSON(
           `/api/admin/posts/${encodeURIComponent(editingCategory)}/${encodeURIComponent(editingSlug)}`,
           { method: 'PUT', body: { title, category, tags, content } }
         );
+        changeType = 'update';
         Blog.showToast('글이 수정되었습니다.', 'success');
       }
-      window.location.href = `/post?category=${encodeURIComponent(result.category.slug)}&slug=${encodeURIComponent(result.slug)}`;
+      savedPost = result;
+      await showGitCommitPanel(changeType);
     } catch (err) {
       $('#editor-error').text(err.message);
     }
@@ -250,5 +301,7 @@
     $('#new-category-cancel').on('click', handleCancelNewCategory);
     $('#save-btn').on('click', handleSave);
     $('#delete-btn').on('click', handleDelete);
+    $('#git-commit-btn').on('click', handleGitCommit);
+    $('#git-skip-btn').on('click', goToSavedPost);
   });
 })();

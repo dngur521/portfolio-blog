@@ -29,4 +29,6 @@ module.exports = {
     database: process.env.DB_NAME,
   },
   uploadMaxSizeMb: parseInt(process.env.UPLOAD_MAX_SIZE_MB, 10) || 5,
+  geminiApiKey: process.env.GEMINI_API_KEY || null,
+  geminiModel: process.env.GEMINI_MODEL || 'gemini-2.5-flash',
 };

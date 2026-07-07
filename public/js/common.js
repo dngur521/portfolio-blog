@@ -240,6 +240,25 @@
     $order.on('change', trigger);
   }
 
+  // 서버 페이징(로그)과 클라이언트 페이징(전체 글 목록) 양쪽에서 재사용하는 이전/다음 버튼 UI.
+  // 페이지가 하나뿐이면 아예 렌더링하지 않는다 - 눌러도 아무 일도 안 나는 "1 / 1" 표시는
+  // 오히려 페이지네이션이 없는 것처럼 보여 혼란만 준다.
+  function renderPagination(elId, { page, totalPages, onChange }) {
+    const $pg = $(`#${elId}`);
+    $pg.empty();
+    if (totalPages <= 1) return;
+
+    const $prev = $('<button type="button" class="btn btn-secondary">이전</button>').prop('disabled', page <= 1);
+    $prev.on('click', () => onChange(page - 1));
+
+    const $info = $(`<span class="pagination-info">${page} / ${totalPages}</span>`);
+
+    const $next = $('<button type="button" class="btn btn-secondary">다음</button>').prop('disabled', page >= totalPages);
+    $next.on('click', () => onChange(page + 1));
+
+    $pg.append($prev, $info, $next);
+  }
+
   async function renderCategoryDropdown(elId, activeSlug) {
     const el = document.getElementById(elId);
     if (!el) return;
@@ -300,6 +319,7 @@
     renderCategoryDropdown,
     sortPosts,
     initSortControls,
+    renderPagination,
     redirectIfNotAuthenticated,
     initThemeToggle,
     getCsrfToken,

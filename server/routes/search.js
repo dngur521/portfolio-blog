@@ -5,8 +5,8 @@ const searchService = require('../services/searchService');
 router.get('/', async (req, res, next) => {
   try {
     const q = (req.query.q || '').toString().trim();
-    if (q.length < 2) {
-      return res.status(400).json({ error: true, message: '검색어는 2자 이상이어야 합니다.' });
+    if (q.length < 1) {
+      return res.status(400).json({ error: true, message: '검색어를 입력해주세요.' });
     }
     if (q.length > 100) {
       return res.status(400).json({ error: true, message: '검색어는 100자를 초과할 수 없습니다.' });
