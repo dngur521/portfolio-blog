@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>로그인 이력 - 김우혁의 블로그 관리자</title>
+  <link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+  <nav class="site-nav" id="admin-nav"></nav>
+  <main class="container">
+    <h1 class="page-title">로그인 이력</h1>
+    <div class="filters-bar">
+      <select id="filter-username"><option value="">전체 계정</option></select>
+      <select id="filter-event">
+        <option value="">전체 이벤트</option>
+        <option value="LOGIN_SUCCESS">성공</option>
+        <option value="LOGIN_FAIL">실패</option>
+        <option value="LOGOUT">로그아웃</option>
+      </select>
+    </div>
+    <table class="log-table">
+      <thead>
+        <tr>
+          <th>시간</th>
+          <th>계정</th>
+          <th>이벤트</th>
+          <th>IP</th>
+          <th>User-Agent</th>
+          <th>실패 사유</th>
+        </tr>
+      </thead>
+      <tbody id="log-table-body"></tbody>
+    </table>
+    <div class="pagination" id="log-pagination"></div>
+  </main>
+
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <script src="/js/common.js"></script>
+  <script src="/js/admin-logs.js"></script>
+</body>
+</html>

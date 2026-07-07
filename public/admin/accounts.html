@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>계정 관리 - 김우혁의 블로그 관리자</title>
+  <link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+  <nav class="site-nav" id="admin-nav"></nav>
+  <main class="container">
+    <h1 class="page-title">관리자 계정 관리</h1>
+    <p class="post-meta">새 계정은 서버에서 <code>npm run create-admin</code> 명령으로 생성하세요.</p>
+    <table class="log-table">
+      <thead>
+        <tr>
+          <th>아이디</th>
+          <th>표시 이름</th>
+          <th>활성 상태</th>
+          <th>생성일</th>
+        </tr>
+      </thead>
+      <tbody id="accounts-table-body"></tbody>
+    </table>
+  </main>
+
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <script src="/js/common.js"></script>
+  <script src="/js/admin-accounts.js"></script>
+</body>
+</html>

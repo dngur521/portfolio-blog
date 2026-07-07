@@ -1,0 +1,17 @@
+[Unit]
+Description=portfolio-blog Node.js server
+After=network.target mariadb.service
+Wants=mariadb.service
+
+[Service]
+Type=simple
+User=kam
+Group=users
+WorkingDirectory=/home/kam/portfolio-blog
+ExecStart=/usr/local/bin/node server/app.js
+Restart=on-failure
+RestartSec=5s
+NoNewPrivileges=true
+
+[Install]
+WantedBy=multi-user.target
