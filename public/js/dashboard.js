@@ -16,7 +16,7 @@
 
   $(async function () {
     Blog.bindPostCardNavigation('#post-list');
-    const status = await Blog.renderNav(null, 'all');
+    const status = await Blog.renderNav('all');
     if (status.authenticated) $('#write-post-btn').show();
     await Blog.renderCategoryDropdown('category-filter', '');
     await loadPosts();

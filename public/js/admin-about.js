@@ -1,6 +1,6 @@
 (function () {
   $(async function () {
-    const status = await Blog.renderNav(null, 'about');
+    const status = await Blog.renderNav('about');
     if (Blog.redirectIfNotAuthenticated(status)) return;
 
     let initialContent = '';

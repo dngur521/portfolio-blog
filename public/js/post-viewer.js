@@ -60,7 +60,7 @@
     const category = Blog.qs('category') || '';
     const slug = Blog.qs('slug') || '';
 
-    const status = await Blog.renderNav(category);
+    const status = await Blog.renderNav();
 
     try {
       const post = await Blog.fetchJSON(`/api/posts/${encodeURIComponent(category)}/${encodeURIComponent(slug)}`);

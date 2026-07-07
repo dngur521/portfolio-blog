@@ -1,6 +1,6 @@
 (function () {
   $(async function () {
-    const status = await Blog.renderNav(null, 'about');
+    const status = await Blog.renderNav('about');
     const editButtonHtml = status.authenticated
       ? '<a class="btn btn-secondary" href="/admin/about">수정</a>'
       : '';

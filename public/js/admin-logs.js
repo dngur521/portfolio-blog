@@ -85,7 +85,7 @@
   }
 
   $(async function () {
-    const status = await Blog.renderNav(null, 'logs');
+    const status = await Blog.renderNav('logs');
     if (Blog.redirectIfNotAuthenticated(status)) return;
 
     await loadAccountsFilter();

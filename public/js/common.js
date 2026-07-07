@@ -137,29 +137,18 @@
 
   // 로그인 여부와 무관하게 항상 같은 공개 화면을 기본으로 보여주고,
   // 로그인된 경우에만 로그아웃/관리 링크를 얹어주는 단일 네비게이션.
-  async function renderNav(activeCategorySlug, activePage) {
+  // 카테고리 목록은 페이지별 "카테고리별 보기" 드롭다운에서 이미 보여주므로
+  // nav 자체에는 카테고리별 링크를 나열하지 않는다.
+  async function renderNav(activePage) {
     const nav = document.getElementById('site-nav');
     if (!nav) return { authenticated: false };
 
-    let categories = [];
     let status = { authenticated: false };
     try {
-      const [catData, authData] = await Promise.all([
-        fetchJSON('/api/categories'),
-        fetchJSON('/api/auth/status'),
-      ]);
-      categories = catData.categories || [];
-      status = authData;
+      status = await fetchJSON('/api/auth/status');
     } catch (e) {
       // 조회 실패 시 비로그인 상태의 기본 화면으로 진행
     }
-
-    const catLinks = categories
-      .map((c) => {
-        const active = c.slug === activeCategorySlug ? ' active' : '';
-        return `<a class="nav-cat${active}" href="/category?slug=${encodeURIComponent(c.slug)}">${escapeHtml(c.name)} <span class="badge">${c.postCount}</span></a>`;
-      })
-      .join('');
 
     const allActive = activePage === 'all' ? ' active' : '';
     const aboutActive = activePage === 'about' ? ' active' : '';
@@ -179,7 +168,6 @@
         <div class="nav-categories">
           <a class="nav-cat${allActive}" href="/">전체 글 보기</a>
           <a class="nav-cat${aboutActive}" href="/about">About me</a>
-          ${catLinks}
         </div>
         <form class="nav-search" id="nav-search-form">
           <input type="search" id="nav-search-input" placeholder="검색..." maxlength="100" />

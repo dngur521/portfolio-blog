@@ -118,14 +118,6 @@ a:hover {
   background: var(--color-bg);
   color: var(--color-text);
 }
-.badge {
-  display: inline-block;
-  background: var(--color-border);
-  color: var(--color-text);
-  border-radius: 10px;
-  padding: 0 7px;
-  font-size: 0.75rem;
-}
 .nav-search input {
   padding: 6px 10px;
   border: 1px solid var(--color-border);

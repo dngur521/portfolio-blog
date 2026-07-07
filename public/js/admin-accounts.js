@@ -40,7 +40,7 @@
   }
 
   $(async function () {
-    const status = await Blog.renderNav(null, 'accounts');
+    const status = await Blog.renderNav('accounts');
     if (Blog.redirectIfNotAuthenticated(status)) return;
     await loadAccounts();
   });

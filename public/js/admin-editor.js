@@ -206,7 +206,7 @@
   }
 
   $(async function () {
-    const status = await Blog.renderNav(null, 'editor');
+    const status = await Blog.renderNav('editor');
     if (Blog.redirectIfNotAuthenticated(status)) return;
 
     editor = new toastui.Editor({
