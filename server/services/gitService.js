@@ -17,7 +17,10 @@ function run(args) {
 }
 
 async function getStatus(paths) {
-  const { stdout } = await run(['status', '--porcelain', '--', ...paths]);
+  // --untracked-files=all: 기본값(normal)은 완전히 새로 생긴 디렉터리를
+  // "posts/{category}/" 한 줄로 뭉뚱그려버려서, 카테고리를 새로 만들고 그 안에
+  // 처음 글을 쓴 경우 파일 경로가 아니라 디렉터리 경로가 넘어와 아래쪽 경로 검증에서 막힌다.
+  const { stdout } = await run(['status', '--porcelain', '--untracked-files=all', '--', ...paths]);
   return stdout
     .split('\n')
     .filter(Boolean)
@@ -35,7 +38,7 @@ async function getStatus(paths) {
 // 커밋 범위를 그 경로들로 한정해서(-- pathspec), 배포 중인 저장소에 그 순간 우연히 staged된
 // 다른 변경사항이 있더라도 함께 커밋되지 않게 한다.
 async function commitAndPush({ filePaths, message }) {
-  const { stdout: statusOut } = await run(['status', '--porcelain', '--', ...filePaths]);
+  const { stdout: statusOut } = await run(['status', '--porcelain', '--untracked-files=all', '--', ...filePaths]);
   if (!statusOut.trim()) {
     const err = new Error('커밋할 변경 사항이 없습니다.');
     err.status = 400;
