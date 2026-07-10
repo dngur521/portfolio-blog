@@ -36,7 +36,7 @@ app.use(
         defaultSrc: ["'self'"],
         // 'sha256-...'는 각 페이지 <head>의 다크모드 FOUC 방지 인라인 스크립트(테마를 body 렌더링 전에
         // 적용하는 코드, public/*.html 참고) 전용 해시다. 그 스크립트 내용을 바꾸면 해시도 다시 계산해야 한다.
-        // jQuery/marked/DOMPurify/highlight.js는 CDN이 아니라 /vendor 경로(node_modules를
+        // jQuery/marked/DOMPurify/highlight.js/mermaid는 CDN이 아니라 /vendor 경로(node_modules를
         // 그대로 서빙)로 자체 호스팅한다 - 아래 "정적 파일(vendor)" 섹션 참고. Toast UI Editor만은
         // CDN에 남겨뒀다: npm 배포판(dist/toastui-editor.js)은 prosemirror-* 의존성을 번들에
         // 담지 않고 외부 모듈로 남겨둬서 번들러 없이 plain <script>로는 동작하지 않고,
@@ -150,6 +150,7 @@ app.use('/vendor/jquery', express.static(path.join(PROJECT_ROOT, 'node_modules/j
 app.use('/vendor/marked', express.static(path.join(PROJECT_ROOT, 'node_modules/marked/lib'), { setHeaders: VENDOR_CACHE_HEADERS }));
 app.use('/vendor/dompurify', express.static(path.join(PROJECT_ROOT, 'node_modules/dompurify/dist'), { setHeaders: VENDOR_CACHE_HEADERS }));
 app.use('/vendor/highlightjs', express.static(path.join(PROJECT_ROOT, 'node_modules/@highlightjs/cdn-assets'), { setHeaders: VENDOR_CACHE_HEADERS }));
+app.use('/vendor/mermaid', express.static(path.join(PROJECT_ROOT, 'node_modules/mermaid/dist'), { setHeaders: VENDOR_CACHE_HEADERS }));
 
 app.use(
   express.static(path.resolve(PROJECT_ROOT, 'public'), {

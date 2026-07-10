@@ -309,6 +309,41 @@
     });
   }
 
+  // marked의 기본 코드블록 렌더링(하이라이트용 <pre><code>) 대신, ```mermaid 블록만
+  // mermaid.js가 찾는 <pre class="mermaid"> 형태로 바꿔서 다이어그램으로 그려지게 한다.
+  function renderMarkdown(rawMarkdown) {
+    const renderer = new marked.Renderer();
+    const defaultCode = renderer.code.bind(renderer);
+    renderer.code = function (token) {
+      const lang = (token.lang || '').trim().split(/\s+/)[0];
+      if (lang === 'mermaid') {
+        return `<pre class="mermaid">${escapeHtml(token.text)}</pre>`;
+      }
+      return defaultCode(token);
+    };
+    return DOMPurify.sanitize(marked.parse(rawMarkdown || '', { renderer }));
+  }
+
+  let mermaidInitialized = false;
+
+  function isDarkMode() {
+    const explicit = document.documentElement.getAttribute('data-theme');
+    if (explicit === 'dark') return true;
+    if (explicit === 'light') return false;
+    return !!(window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
+  }
+
+  function renderMermaidDiagrams(container) {
+    if (!window.mermaid) return;
+    const nodes = $(container).find('pre.mermaid').toArray();
+    if (nodes.length === 0) return;
+    if (!mermaidInitialized) {
+      window.mermaid.initialize({ startOnLoad: false, theme: isDarkMode() ? 'dark' : 'default' });
+      mermaidInitialized = true;
+    }
+    window.mermaid.run({ nodes }).catch((err) => console.error('mermaid 렌더링 실패:', err));
+  }
+
   global.Blog = {
     fetchJSON,
     formatDate,
@@ -326,5 +361,7 @@
     getCsrfToken,
     postCardHtml,
     bindPostCardNavigation,
+    renderMarkdown,
+    renderMermaidDiagrams,
   };
 })(window);

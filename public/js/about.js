@@ -13,7 +13,7 @@
     const editButtonHtml = status.authenticated
       ? '<a class="btn btn-secondary" href="/admin/about">수정</a>'
       : '';
-    const safeHtml = DOMPurify.sanitize(marked.parse(about.content || ''));
+    const safeHtml = Blog.renderMarkdown(about.content || '');
     $('#about-container').html(`
       <div class="page-header">
         <h1 class="page-title">About me</h1>
@@ -21,5 +21,6 @@
       </div>
       <article class="post-body">${safeHtml}</article>
     `);
+    Blog.renderMermaidDiagrams('#about-container');
   });
 })();

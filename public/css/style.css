@@ -273,6 +273,15 @@ a:hover {
   padding: 14px;
   border-radius: 6px;
 }
+.post-body pre.mermaid {
+  background: transparent;
+  color: inherit;
+  padding: 12px 0;
+  text-align: center;
+}
+.post-body pre.mermaid svg {
+  max-width: 100%;
+}
 .post-body img {
   max-width: 100%;
   border-radius: 6px;

@@ -4,8 +4,7 @@
       .map((t) => `<span class="tag-chip">#${Blog.escapeHtml(t)}</span>`)
       .join('');
 
-    const rawHtml = marked.parse(post.content || '');
-    const safeHtml = DOMPurify.sanitize(rawHtml);
+    const safeHtml = Blog.renderMarkdown(post.content || '');
 
     const adminActionsHtml = isAuthenticated
       ? `
@@ -34,6 +33,7 @@
         window.hljs.highlightElement(block);
       });
     }
+    Blog.renderMermaidDiagrams('#post-container');
 
     if (isAuthenticated) {
       $('#delete-post-btn').on('click', async () => {
