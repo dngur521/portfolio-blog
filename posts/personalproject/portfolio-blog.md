@@ -4,10 +4,10 @@ date: '2026-07-10'
 slug: portfolio-blog
 category: personalproject
 tags:
-  - web
   - nodejs
   - Express
   - MariaDB
+  - web
 ---
 # 개요
 
@@ -164,3 +164,6 @@ graph TB
 - 지금은 DB가 유일한 소스이므로, VSCode 등에서 `posts/` 아래 `.md` 파일을 직접 추가해도 DB에 메타데이터 행이 없으면 목록에 노출되지 않는다. 웹 에디터를 거치지 않고 파일만 추가하는 흐름을 지원하려면 별도의 동기화 로직이 필요하다.
 - `activity_logs.event_type`처럼 스키마 변경이 필요한 기능을 추가할 때마다, 앱 전용 DB 계정(`blog_app`)이 DDL 권한이 없어 배포 서버에서 수동으로 `ALTER TABLE`을 실행해야 한다.
 - Git 커밋·푸시 기능은 배포 호스트에 미리 git push 자격증명(`credential.helper store` + PAT)이 설정돼 있어야 동작한다 — 새 호스트에 배포할 때 빠뜨리기 쉬운 부분이라 별도 체크리스트로 남겨둘 만하다.
+---
+# Github
+- https://github.com/dngur521/portfolio-blog
