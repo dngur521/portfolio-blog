@@ -77,6 +77,11 @@ async function deleteCategoryBySlug(slug) {
     }
     throw e;
   }
+
+  // 글이 하나라도 있으면 위 DELETE가 FK 제약으로 이미 막히므로, 여기 도달했다는 건
+  // 폴더가 비어 있다는 뜻 - 안전하게 지울 수 있다.
+  const categoryDir = safeResolve(POSTS_ROOT, slug);
+  await fs.rm(categoryDir, { recursive: true, force: true });
 }
 
 module.exports = {
